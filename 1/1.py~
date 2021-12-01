@@ -1,0 +1,16 @@
+import numpy as np
+
+with open('input.txt') as f:
+	nums = f.readlines()
+
+nums = np.asarray(nums, dtype=int)
+
+tot_incs = 0
+tot_decs = 0
+print(np.arange(1, len(nums))[-1])
+for loc in np.arange(1, len(nums)):
+	if nums[loc]>nums[loc-1]:
+		tot_incs += 1
+	else:
+		tot_decs += 1
+print(f"{tot_incs} increases, {tot_decs} decs, {len(nums)} total")
