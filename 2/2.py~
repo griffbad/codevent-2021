@@ -1,0 +1,13 @@
+import numpy as np
+from itertools import groupby, chain
+from operator import itemgetter
+
+with  open('input.txt') as f:
+	mvmnt = f.readlines()
+
+depth = 0
+horiz = 0
+
+all_instr = [x.split() for x in mvmnt]
+combd = [chain(*i) for _, i in groupby(sorted(all_instr), key=itemgetter(0))]
+print(combd)
