@@ -8,6 +8,7 @@ pos = np.asarray(lines[0].split(','), dtype=int)
 fuel = []
 for i in np.arange(pos.min(), pos.max()):
 	fuel.append(sum(abs(pos-i)))
+fuel = [sum(abs(np.subtract(pos, np.median(pos))))]
 print(f'min human fuel use is {min(fuel)}')
 
 fuel = []
