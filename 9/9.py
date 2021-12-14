@@ -10,7 +10,7 @@ full_mat = []
 for line in lines:
 	full_mat.append(list(map(int, list(line))))
 
-full_mat = np.asarray(full_mat)[:10, :10]
+full_mat = np.asarray(full_mat)
 
 min_locs = []
 min_vals = []
@@ -95,13 +95,14 @@ counter = 2
 def make_basin(arr, loc: tuple, all_locs):
 	#print(arr.shape)
 	#print(loc[0])
-	if arr[loc] == 0:
+	if arr[loc] == 0 or loc in all_locs:
 		return []
 	else:
 		all_locs += [loc]
+		#print(all_locs)
 		new_tups = [tuple(np.add(loc, [0,1])), tuple(np.add(loc, [1,0])),
 				tuple(np.add(loc, [-1,0])), tuple(np.add(loc, [0,-1]))]
-		print([try: arr[x] except: pass for x in new_tups])
+		#print(new_tups)
 		if loc[1]<arr.shape[1]-1 and new_tups[0] not in all_locs and arr[new_tups[0]]!=0 :
 			all_locs += make_basin(arr, new_tups[0],  all_locs)
 		if loc[0]<arr.shape[0]-1 and new_tups[1] not in all_locs and arr[new_tups[1]]!=0 :
@@ -110,19 +111,20 @@ def make_basin(arr, loc: tuple, all_locs):
 			all_locs += make_basin(arr, new_tups[2], all_locs)
 		if loc[1]>0 and new_tups[3] not in all_locs and arr[new_tups[3]]!=0 :
 			all_locs += make_basin(arr, new_tups[3], all_locs)
-		return all_locs
+		#print(set(all_locs))
+		return set(all_locs)
 
 sizes = []
 all_visited = []
 for i in tqdm(min_locs):
-#	print(i)
+	#print(i)
 	loc = list(i)
 	if i[0]<0:
 		loc[0] = bin_fuller_mat.shape[0] + i[0]
 	if i[1]<0:
 		loc[1] = bin_fuller_mat.shape[1] + i[1]
 	loc = tuple(loc)
-	if loc in all_visited:
+	if loc in all_visited or bin_fuller_mat[loc]>1:
 		continue
 	all_basin = make_basin(bin_fuller_mat, loc, [])
 	all_basin = list(set([x for x in all_basin if x != ()]))
