@@ -47,7 +47,7 @@ print(board)
 i = 0
 while final == 0:
 	i+=1
-	print(i+1)
+#	print(i+1)
 	board = np.add(board, 1)
 	[board, count] = burster(board, 0)
 	count = len(np.where(board>9)[0])
@@ -55,7 +55,7 @@ while final == 0:
 	board = np.where(board>9, 0, board)
 	if count == 100 or count_opp == 100:
 		final = i
-	print(f'FINAL: \n{board}')
+#	print(f'FINAL: \n{board}')
 	sum+=count
 	if i == 100:
 		sum_cent = sum
