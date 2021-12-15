@@ -1,102 +1,55 @@
 import numpy as np
 from tqdm import tqdm
 
-#with open('test.txt') as f:
-with open('input.txt') as f:
+with open('test.txt') as f:
+#with open('input.txt') as f:
 	lines = f.read().splitlines()
+lines = [list(map(int,list(x))) for x in lines]
 
 #print(lines)
 
+def burster(board, start_count):
+	temp_board = board.copy()
+	print(temp_board)
+	for i, line in enumerate(board):
+		for j, char in enumerate(line):
+			#print([board[x] for x in nbrs])
+			if char == 10:
+				nbrs = [(i-1, j-1), (i-1, j), (i-1, j+1),
+					(i, j-1), (i, j), (i, j+1),
+					(i+1, j-1), (i+1, j), (i+1, j+1)]
+				
+				nbrs = list(set([tuple(np.abs(list(x))) for x in nbrs 
+					if x[0]<board.shape[0] 
+					and x[1]<board.shape[1]]))
 
-def find_close_pairs(line):
-	pair_starts = []
-	for i in np.arange(1, len(line)):
-		#print(line[i])
-		if line[i-1:i+1] == '[]':
-			pair_starts.append(i-1)
-			#ender = i-1 + line[i-1:].rfind(']')
-			#pair_starts.append((i-1,ender))
-		elif line[i-1:i+1] == '{}':
-			pair_starts.append(i-1)
-			#ender = i-1 + line[i-1:].rfind('}')
-			#pair_starts.append((i-1,ender))
-		elif line[i-1:i+1] == '()':
-			pair_starts.append(i-1)
-			#ender = i-1 + line[i-1:].rfind(')')
-			#pair_starts.append((i-1, ender))
-		elif line[i-1:i+1] == '<>':
-			pair_starts.append(i-1)
-			#ender = i-1 + line[i-1:].rfind('>')
-			#pair_starts.append((i-1,ender))
-	return pair_starts
+				for loc in nbrs:
+					temp_board[loc] += 1
+	#print(temp_board)	
+	count = len(np.where(temp_board>9)[0])
 
-def remove_pairs(line, pairs):
-	list_line = list(line)
-	for pair in pairs:
-		list_line[pair] = ' '
-		list_line[pair+1] = ' '
-	list_line = [x  for x in list_line if x != ' ']
-	return ''.join(list_line)
+	#print(f'count: {count}')
+	count_two = 0
+	if count>start_count:
+		[temp_board, count_two] =  burster(temp_board, count)
+		#count+=count_two
 
-def find_first_closed(line):
-	for i in np.arange(len(line)):
-		if line[i] in [']', '}', ')', '>']:
-			return line[i]
+	
+	return([temp_board,count])
 
-def find_closer(line):
-	closers = []
-	for i in line[::-1]:
-		if i == '{': closers.append('}')
-		elif i == '[': closers.append(']')
-		elif i == '<': closers.append('>')
-		elif i == '(': closers.append(')')
-	return closers
-
-def calc_score(closers):
-	score = 0
-	for i in closers:
-		score = score * 5
-		if i == ')': score += 1
-		elif i == ']': score += 2
-		elif i == '}': score += 3
-		elif i == '>': score += 4
-	return score
-
-
-all_err = []
-all_scores = []
-
-for i in lines:
-	line = i
-
-	pairs = find_close_pairs(line)
-	#print(f'pairs: {pairs}')
-	#print(f'line: {line}')
-	while pairs != [] and line!=None:
-		line = remove_pairs(line, pairs)
-		pairs = find_close_pairs(line)
-		#print(line)
-
-	closed = find_first_closed(line)
-
-	score = 0
-
-	if closed == None:
-		closer = find_closer(line)
-		score += calc_score(closer)
-		all_scores.append(score)
-	all_err.append(closed)
-
-
-all_err = [x for x in all_err if x != None]
+board = np.asarray(lines.copy())
 
 sum = 0
+print(board)
+for i in tqdm(np.arange(10)):
 
-for err in all_err:
-	if err == '>': sum+=25137
-	elif err == '}': sum+=1197
-	elif err == ']': sum+=57
-	elif err ==')':sum+=3
+	print(i+1)
+	board = np.add(board, 1)
+	[board, count] = burster(board, 0)
+	count = len(np.where(board>9)[0])
+	board = np.where(board>9, 0, board)
+	print(f'FINAL: \n{board}')
+	sum+=count
 
-print(f'for the errors of {all_err}, sum is {sum}')
-print(f'completing score is {np.median(all_scores)}')
+
+print(f'after 100 gens, {sum} octopi have burst')
