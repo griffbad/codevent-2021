@@ -1,0 +1,29 @@
+import numpy as np
+from tqdm import tqdm
+
+with open('test.txt') as f:
+#with open('input.txt') as f:
+	lines = f.read().splitlines()
+
+dots = np.asarray([tuple(map(int, x.split(','))) for x in lines if len(x)>0 and len(x.split(','))==2])
+
+instr = lines[len(dots)+1:]
+
+#print(dots)
+#print(instr)
+
+maxx = max(dots[:,0])
+maxy = max(dots[:,1])
+
+full_sheet = np.full([maxx+1, maxy+1], '.')
+
+
+for i in dots:
+	#print(tuple(i))
+	full_sheet[tuple(i)] = '#'
+
+full_sheet = full_sheet.T
+
+
+for i in instr:
+	print(i)
