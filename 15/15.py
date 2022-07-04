@@ -9,3 +9,5 @@ with open('test.txt') as f:
 
 for i,line in enumerate(lines):
 	lines[i] = list(map(int, list(line)))
+
+print(lines)
